@@ -12,17 +12,15 @@ import java.util.logging.Logger;
 public class SVG extends DefaultHandler {
     private static final String CLASS_NAME = SVG.class.getName();
     private final static Logger LOG = Logger.getLogger(CLASS_NAME);
-
     private SAXParser parser = null;
-    private static   SVG handler = null;
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
         if (args.length == 0) {
             LOG.severe("No file to process. Usage is:" + "\njava DisplayXML <filename>");
             return;
         }
         File xmlFile = new File( args[0] );
-        handler = new SVG();
+        SVG handler = new SVG();
         handler.process(xmlFile);
     }
     private void process(File file) {
@@ -37,33 +35,25 @@ public class SVG extends DefaultHandler {
         try {
             parser = spf.newSAXParser();
             System.out.println("Parser object is: " + parser);
-        } catch (SAXException e) {
-            LOG.severe(e.getMessage());
-            System.exit(1);
-        } catch (ParserConfigurationException e) {
+        } catch (SAXException | ParserConfigurationException e) {
             LOG.severe(e.getMessage());
             System.exit(1);
         }
         System.out.println("\nStarting parsing of " + file + "\n");
         try {
             parser.parse(file, this);
-        } catch (IOException e) {
-            LOG.severe(e.getMessage());
-        } catch (SAXException e) {
+        } catch (IOException | SAXException e) {
             LOG.severe(e.getMessage());
         }
     }
     public void startDocument() {
         System.out.println("START-DOCUMENT");
     }
-
     public void endDocument() {
         System.out.println("END-DOCUMENT");
     }
-
     public void startElement(String uri, String localName, String qname, Attributes attr) {
-        System.out.printf("START-ELEMENT: local name: \'%s\' qname: \'%s\' uri: \'%s\'\n",localName, qname, uri);
-
+        System.out.printf("START-ELEMENT: local name: '%s' qname: '%s' uri: '%s'\n",localName, qname, uri);
         int n = attr.getLength();
         for (int i=0;i<n; i++) {
             String attName = attr.getLocalName(i);
@@ -72,15 +62,8 @@ public class SVG extends DefaultHandler {
             System.out.printf("\t%s = %s (%s)\n",attName,attrValue,attrType);
         }
     }
-    public void endElement(String uri, String localName, String qname) {
-        System.out.printf("END-ELEMENT: local name: \'%s\' qname: \'%s\' uri: \'%s\'\n",localName, qname, uri);
-    }
     public void characters(char[] ch, int start, int length) {
         String data = new String(ch, start, length);
         System.out.printf("CHARACTERS (%d): \"%s\"\n", length, data );
-    }
-    public void ignorableWhitespace(char[] ch, int start, int length) {
-        String data = new String(ch, start, length);
-        System.out.printf("IGNORABLE WHITESPACE (%d): \"%s\"\n",length, data );
     }
 }
